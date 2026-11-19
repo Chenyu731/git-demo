@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block title %}分機號碼表{% endblock %}
+{% block body %}
+<h1>分機號碼表</h1>
+<form method="get" class="row"><select name="dept"><option value="">全部部門</option>{% for i,p in paths.items() %}<option value="{{ i }}" {{ 'selected' if dept==i|string }}>{{ p }}</option>{% endfor %}</select><button>篩選</button></form>
+<table><thead><tr><th>分機</th><th>所屬部門</th><th>等級</th><th>狀態</th><th>備註</th><th></th></tr></thead><tbody>
+{% for n in nums %}<tr><form method="post" action="/admin/exts/save"><input type="hidden" name="csrf_token" value="{{ csrf }}"><input type="hidden" name="ext" value="{{ n.ext }}">
+<td>{{ n.ext }}</td><td><select name="department_id"><option value="">（無）</option>{% for i,p in paths.items() %}<option value="{{ i }}" {{ 'selected' if n.department_id==i }}>{{ p }}</option>{% endfor %}</select></td>
+<td><select name="grade"><option {{ 'selected' if n.grade=='A' }}>A</option><option {{ 'selected' if n.grade=='B' }}>B</option></select></td>
+<td class="{{ 'vac' if status[n.ext]=='空號' }}">{{ status[n.ext] }}</td><td><input name="note" value="{{ n.note }}"></td><td><button class="secondary">存</button></td></form></tr>{% endfor %}</tbody></table>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}{% block title %}人員與單位{% endblock %}
+{% block body %}
+<h1>人員與單位</h1>
+<form method="get" class="row"><input name="q" value="{{ f.q }}" placeholder="姓名、部門、分機、Email">
+<select name="dept"><option value="">全部部門</option>{% for i,p in paths.items() %}<option value="{{ i }}" {{ 'selected' if f.dept == i|string }}>{{ p }}</option>{% endfor %}</select>
+<select name="typ"><option value="">全部類型</option><option value="P" {{ 'selected' if f.typ=='P' }}>人員</option><option value="U" {{ 'selected' if f.typ=='U' }}>單位</option></select>
+<label><input type="checkbox" name="inactive" value="1" {{ 'checked' if f.inactive }}>含已停用</label><button>篩選</button>
+<a class="btn" href="/admin/people/new">新增</a></form>
+<p class="muted">{{ total }} / {{ all_total }} 筆</p>
+<table><thead><tr><th>類型</th><th>名稱</th><th>部門</th><th>職稱</th><th>分機</th><th>狀態</th><th></th></tr></thead><tbody>
+{% for e in rows %}<tr class="{{ 'off' if not e.active }}"><td>{{ '人員' if e.type=='P' else '單位' }}</td><td>{{ e.print_name or e.name }}</td><td>{{ paths.get(e.department_id, '（置頂）') }}</td><td>{{ e.title }}</td>
+<td>{{ e.ext or '' }}{{ ' (個人)' if e.personal_ext }}</td><td>{{ '' if e.active else '停用 ' }}{{ '不列入 ' if not e.in_directory }}{{ '不列 ' if e.hide_in_print }}</td>
+<td><a href="/admin/people/{{ e.id }}">編輯</a></td></tr>{% endfor %}</tbody></table>
+<p>{% for n in range(1, pages+1) %}<a href="?q={{ f.q|urlencode }}&dept={{ f.dept }}&typ={{ f.typ }}&inactive={{ f.inactive }}&page={{ n }}" {{ 'class=cur' if n==page }}>{{ n }}</a> {% endfor %}</p>
+{% endblock %}

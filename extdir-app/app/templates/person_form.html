@@ -1,0 +1,22 @@
+{% extends "base.html" %}{% block title %}編輯{% endblock %}
+{% block body %}
+<h1>{{ '編輯' if obj else '新增' }}人員／單位</h1>
+<form method="post" action="/admin/people/save" class="grid"><input type="hidden" name="csrf_token" value="{{ csrf }}">
+{% if obj %}<input type="hidden" name="id" value="{{ obj.id }}">{% endif %}
+<label>類型<select name="type"><option value="P" {{ 'selected' if obj and obj.type=='P' }}>人員</option><option value="U" {{ 'selected' if obj and obj.type=='U' }}>單位</option></select></label>
+<label>名稱<input name="name" required value="{{ obj.name if obj }}"></label>
+<label>列印名稱（單位）<input name="print_name" value="{{ obj.print_name or '' if obj }}"></label>
+<label>Email（人員）<input name="email" value="{{ obj.email or '' if obj }}"></label>
+<label>部門<select name="department_id"><option value="">（置頂）</option>{% for i,p in paths.items() %}<option value="{{ i }}" {{ 'selected' if obj and obj.department_id==i }}>{{ p }}</option>{% endfor %}</select></label>
+<label>職稱<input name="title" value="{{ obj.title if obj }}"></label>
+<label>分機<input name="ext" value="{{ obj.ext or '' if obj }}"></label>
+<label class="chk"><input type="checkbox" name="personal_ext" value="1" {{ 'checked' if obj and obj.personal_ext }}>有個人分機</label>
+<label class="chk"><input type="checkbox" name="in_directory" value="1" {{ 'checked' if not obj or obj.in_directory }}>列入分機表</label>
+<label class="chk"><input type="checkbox" name="hide_in_print" value="1" {{ 'checked' if obj and obj.hide_in_print }}>列印版不列</label>
+<label>排序<input name="sort" value="{{ obj.sort if obj }}"></label>
+<label>備註<input name="note" value="{{ obj.note if obj }}"></label>
+{% if vac %}<p class="muted">此部門空號：{{ vac|join('、') }}</p>{% endif %}
+<div class="row"><button>儲存</button><a href="/admin/people">取消</a></div></form>
+{% if obj %}<form method="post" action="/admin/people/{{ obj.id }}/active"><input type="hidden" name="csrf_token" value="{{ csrf }}">
+<input type="hidden" name="active" value="{{ '0' if obj.active else '1' }}"><button class="secondary">{{ '停用（不刪除）' if obj.active else '重新啟用' }}</button></form>{% endif %}
+{% endblock %}

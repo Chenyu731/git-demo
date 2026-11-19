@@ -1,0 +1,28 @@
+{% extends "base.html" %}{% block title %}異動收件匣{% endblock %}
+{% macro csrf_field() %}<input type="hidden" name="csrf_token" value="{{ csrf }}">{% endmacro %}
+{% block body %}
+<h1>異動收件匣</h1>
+<h2>待你確認（{{ pending|length }}）</h2>
+{% if not pending %}<p class="muted">沒有待確認的項目。</p>{% endif %}
+{% for c in pending %}
+<section class="card"><b>[{{ {'new':'新進','new_dept':'部門對應','leave':'離職','move':'調部門','promote':'升遷','rename_candidate':'部門改名?','title':'職稱'}.get(c.kind, c.kind) }}]</b>
+ {{ c.name }} {% if c.from_dep or c.to_dep %}<span class="muted">{{ c.from_dep }}{% if c.from_dep and c.to_dep %} → {% endif %}{{ c.to_dep }}</span>{% endif %}
+ <div class="muted">{{ c.reason }}</div>
+ <form method="post" action="/admin/inbox/{{ c.id }}/act" class="row">{{ csrf_field() }}
+ {% if c.kind in ('new_dept','rename_candidate') %}
+   <select name="department_id">{% for d in depts %}<option value="{{ d.id }}">{{ d.name }}</option>{% endfor %}</select>
+   <button name="action" value="{{ 'map_dept' if c.kind == 'new_dept' else 'apply_rename' }}">{{ '指定部門' if c.kind == 'new_dept' else '已改名，整批套用' }}</button>
+ {% elif c.kind in ('new','move') %}
+   <select name="department_id"><option value="">（置頂／不變）</option>{% for d in depts %}<option value="{{ d.id }}">{{ d.name }}</option>{% endfor %}</select>
+   <input name="ext" size="5" placeholder="分機"><label><input type="checkbox" name="personal_ext" value="1">個人分機</label>
+   <button name="action" value="{{ 'confirm_new' if c.kind == 'new' else 'confirm_move' }}">確認</button>
+ {% elif c.kind == 'leave' %}<button name="action" value="confirm_leave">確認離職（分機回到空號）</button>
+ {% else %}<button name="action" value="ack">已處理</button>{% endif %}
+ <button name="action" value="skip" class="secondary">略過</button></form></section>
+{% endfor %}
+<h2>已自動處理（可還原）</h2>
+{% for c in auto %}{% if not (c.after or {}).get('silent') %}
+<section class="card"><b>[{{ c.kind }}]</b> {{ c.name }} <span class="muted">{{ c.from_dep }}{% if c.from_dep and c.to_dep %} → {% endif %}{{ c.to_dep }} — {{ c.reason }}</span>
+<form method="post" action="/admin/inbox/{{ c.id }}/undo" class="inline">{{ csrf_field() }}<button class="secondary">還原</button></form></section>{% endif %}
+{% else %}<p class="muted">沒有。</p>{% endfor %}
+{% endblock %}

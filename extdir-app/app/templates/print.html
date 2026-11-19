@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% block title %}列印與匯出{% endblock %}
+{% block body %}
+<h1>列印與匯出</h1>
+<div class="row">
+<form method="post" action="/admin/export/wall"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button>下載貼牆版 Excel</button></form>
+<form method="post" action="/admin/export/eip"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button>下載 EIP 上傳檔 Excel</button></form>
+<form method="post" action="/admin/print/balance"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="secondary">自動平衡欄高</button></form></div>
+<p class="muted">上次匯出：貼牆版 {{ last.wall or '無' }}／EIP {{ last.eip or '無' }}。EIP 上傳會覆蓋整廠，匯出前請確認資料是最新的。已下載或印出的內容是當下的快照，不會自己更新。</p>
+<h2>列印前檢查</h2>
+{% if lay.warnings %}<ul class="warn">{% for w in lay.warnings %}<li>{{ w }}</li>{% endfor %}</ul>{% else %}<p>沒有警告。</p>{% endif %}
+<h2>預覽（A4 直式、三欄）</h2>
+<div class="wall">{% for col in lay.columns %}<table class="w"><thead><tr><th>單位名稱</th><th>分機</th><th>等級</th></tr></thead><tbody>
+{% for r in col %}{% if r.kind=='title' %}<tr class="t {{ r.fill }}"><td colspan="3">{{ r.text }}</td></tr>{% else %}<tr><td>{{ r.text }}</td><td>{{ r.ext or '' }}</td><td>{{ r.grade }}</td></tr>{% endif %}{% endfor %}</tbody><tfoot><tr><td colspan="3" class="muted">{{ col|length }} 列</td></tr></tfoot></table>{% endfor %}</div>
+{% endblock %}

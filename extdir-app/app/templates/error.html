@@ -1,0 +1,1 @@
+{% extends "base.html" %}{% block body %}<h1>{{ code }}</h1><p>{{ "沒有權限" if code == 403 else "找不到頁面" }}</p><p><a href="/">回查詢頁</a></p>{% endblock %}

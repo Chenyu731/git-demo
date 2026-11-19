@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}分機通訊錄{% endblock %}</title><link rel="stylesheet" href="/static/style.css"></head>
+<body>
+<header><a class="brand" href="/">分機通訊錄</a>
+<nav>
+{% if user %}
+<a href="/admin/">異動收件匣</a><a href="/admin/people">人員與單位</a><a href="/admin/depts">部門表</a>
+<a href="/admin/exts">分機號碼表</a><a href="/admin/print">列印與匯出</a><a href="/admin/audit">異動紀錄</a>
+<form method="post" action="/auth/logout" class="inline"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="link">登出 {{ user.email }}</button></form>
+{% else %}<a href="/auth/login">廠務登入</a>{% endif %}
+</nav></header>
+<main>{% if msg %}<p class="flash ok">{{ msg }}</p>{% endif %}{% if err %}<p class="flash bad">{{ err }}</p>{% endif %}
+{% block body %}{% endblock %}</main></body></html>

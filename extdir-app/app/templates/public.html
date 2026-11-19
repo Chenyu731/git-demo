@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block title %}找分機{% endblock %}
+{% block body %}
+<h1>找分機</h1>
+<p class="muted">輸入姓名、部門或分機號碼；也可以搜尋會議室、守衛室等單位。</p>
+<input id="q" type="search" placeholder="例如：品保、守衛室、211、陳文斌" autofocus>
+<div id="depts" class="chips"></div>
+<table id="t"><thead><tr><th>姓名／單位</th><th>部門</th><th>職稱</th><th>分機</th><th>等級</th></tr></thead><tbody></tbody></table>
+<p id="count" class="muted"></p>
+<script src="/static/public.js"></script>
+{% endblock %}
